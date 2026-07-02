@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>狂澜仙欲录：玄阴 — 试玩</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a12; color: #ddd; font-family: 'Microsoft YaHei', sans-serif; display: flex; justify-content: center; min-height: 100vh; }
+#app { width: 800px; max-width: 100vw; position: relative; }
+
+/* 地图 */
+#map { width: 100%; height: 200px; background: #1a1a2e; position: relative; border-bottom: 2px solid #334; }
+#map svg { width: 100%; height: 100%; }
+
+/* 立绘区 */
+#stage { display: flex; justify-content: center; align-items: flex-end; height: 320px; gap: 60px; background: linear-gradient(to bottom, #0f0f1a 0%, #1a1a2e 100%); }
+.sprite { width: 160px; text-align: center; position: relative; }
+.sprite .name { position: absolute; top: -24px; left: 50%; transform: translateX(-50%); color: #888; font-size: 13px; letter-spacing: 2px; }
+.sprite .avatar { width: 140px; height: 200px; margin: 0 auto; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 80px; transition: .3s; }
+.sprite.male .avatar { background: linear-gradient(135deg, #1a2a3a, #0d1a2a); border: 1px solid #2a4a6a; }
+.sprite.female .avatar { background: linear-gradient(135deg, #2a1a3a, #1a0d2a); border: 1px solid #6a2a6a; }
+.sprite.active .avatar { transform: translateY(-10px); filter: brightness(1.3); }
+.sprite .bar { width: 100%; height: 4px; margin-top: 8px; border-radius: 2px; background: #222; overflow: hidden; }
+.sprite .bar span { display: block; height: 100%; border-radius: 2px; transition: width .5s; }
+.sprite.male .bar span { background: #4a8ab5; }
+.sprite.female .bar span { background: #b54a8a; }
+
+/* 对话框 */
+#dialogue { background: #12121e; border-top: 1px solid #2a2a3e; padding: 20px 24px; min-height: 180px; }
+#speaker { color: #b54a8a; font-size: 14px; margin-bottom: 6px; letter-spacing: 1px; }
+#speaker.male { color: #4a8ab5; }
+#text { font-size: 16px; line-height: 1.8; min-height: 60px; color: #ccc; }
+#text .choice { display: block; margin: 10px 0; padding: 10px 16px; background: #1a1a2e; border: 1px solid #2a2a4e; border-radius: 6px; cursor: pointer; color: #aaa; transition: .2s; }
+#text .choice:hover { background: #2a2a4e; color: #fff; border-color: #4a4a8a; }
+
+/* 底部控制 */
+#controls { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: #0e0e18; border-top: 1px solid #1a1a2a; }
+#controls span { color: #555; font-size: 12px; }
+#next-btn { background: #2a2a4e; border: none; color: #ccc; padding: 8px 24px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+#next-btn:hover { background: #3a3a6e; }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- 地图 -->
+  <div id="map">
+    <svg viewBox="0 0 800 200">
+      <rect width="800" height="200" fill="#0d0d1a"/>
+      <!-- 山脉 -->
+      <polygon points="100,180 200,60 300,180" fill="#1a1a30" stroke="#2a2a50" stroke-width="1"/>
+      <polygon points="250,180 350,40 450,180" fill="#1a1a30" stroke="#2a2a50" stroke-width="1"/>
+      <polygon points="500,180 600,80 700,180" fill="#1a1a30" stroke="#2a2a50" stroke-width="1"/>
+      <!-- 月亮 -->
+      <circle cx="650" cy="50" r="20" fill="#444" opacity="0.5"/>
+      <circle cx="650" cy="50" r="12" fill="#666" opacity="0.3"/>
+      <!-- 标注 -->
+      <text x="370" y="25" fill="#555" font-size="12">玄阴山脉</text>
+      <text x="620" y="110" fill="#444" font-size="10">北域</text>
+      <text x="100" y="110" fill="#444" font-size="10">青木镇</text>
+      <!-- 光点 -->
+      <circle cx="350" cy="100" r="4" fill="#b54a8a" opacity="0.8">
+        <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+  </div>
+
+  <!-- 舞台 -->
+  <div id="stage">
+    <div class="sprite male" id="sp-male">
+      <div class="name">苏尘</div>
+      <div class="avatar">⚔️</div>
+      <div class="bar"><span style="width:60%"></span></div>
+    </div>
+    <div class="sprite female active" id="sp-female">
+      <div class="name">冷凝霜</div>
+      <div class="avatar">🌙</div>
+      <div class="bar"><span style="width:80%"></span></div>
+    </div>
+  </div>
+
+  <!-- 对话框 -->
+  <div id="dialogue">
+    <div id="speaker">冷凝霜</div>
+    <div id="text">今夜月色正好，来我寝殿。</div>
+  </div>
+
+  <!-- 控制 -->
+  <div id="controls">
+    <span id="step-indicator">1 / 7</span>
+    <button id="next-btn">继续 →</button>
+  </div>
+</div>
+
+<script>
+const scenes = [
+  {
+    speaker: '冷凝霜', speakerClass: '',
+    text: '今夜月色正好，来我寝殿。',
+    active: 'female',
+    maleBar: 60, femaleBar: 80,
+  },
+  {
+    speaker: '冷凝霜', speakerClass: '',
+    text: '"今天突破金丹了？让师尊检查检查你的根基稳不稳。"<br><br>冷凝霜的手指探进你的衣襟，冰凉滑腻。',
+    active: 'female',
+    maleBar: 65, femaleBar: 85,
+  },
+  {
+    speaker: '冷凝霜', speakerClass: '',
+    text: '她把推倒在榻上，薄纱滑落。月光下她的身体白得像凝脂，跨坐上来时你闻到她颈窝里的暖香。',
+    active: 'female',
+    maleBar: 75, femaleBar: 90,
+  },
+  {
+    speaker: '冷凝霜', speakerClass: '',
+    text: '"嗯……已经这么硬了……看来金丹期的阳气果然更旺。"<br><br>她握住你硬得发烫的鸡巴，熟练地套弄，拇指在龟头上打圈。',
+    active: 'female',
+    maleBar: 85, femaleBar: 92,
+  },
+  {
+    speaker: '冷凝霜', speakerClass: '',
+    text: '她抬腰对准，龟头抵在湿漉漉的穴口，一口气坐到了底——<br><br>"呃……哈啊……！"',
+    active: 'female',
+    maleBar: 90, femaleBar: 95,
+  },
+  {
+    speaker: '冷凝霜', speakerClass: '',
+    text: '穴肉层层叠叠地绞上来，她仰起头，腰肢缓缓起伏——<br><br>（噗呲噗呲）<br><br>"动啊……难道还要师尊自己动？"',
+    active: 'female',
+    maleBar: 92, femaleBar: 98,
+  },
+  {
+    speaker: '——', speakerClass: '',
+    text: '玄阴山的雪落了整夜。天亮时她已经穿戴整齐站在窗前，恢复了那个清冷不可侵犯的山主模样。<br><br>你从榻上撑起身，腰酸得几乎直不起来。<br><br>"今晚还来。"<br><br>不是问句。',
+    active: 'both',
+    maleBar: 70, femaleBar: 99,
+  },
+]
+
+let step = 0
+const speakerEl = document.getElementById('speaker')
+const textEl = document.getElementById('text')
+const nextBtn = document.getElementById('next-btn')
+const stepInd = document.getElementById('step-indicator')
+const maleSprite = document.getElementById('sp-male')
+const femaleSprite = document.getElementById('sp-female')
+const maleBar = maleSprite.querySelector('.bar span')
+const femaleBar = femaleSprite.querySelector('.bar span')
+
+function render(i) {
+  const s = scenes[i]
+  speakerEl.textContent = s.speaker
+  speakerEl.className = s.speakerClass
+  textEl.innerHTML = s.text
+  stepInd.textContent = `${i+1} / ${scenes.length}`
+  maleBar.style.width = s.maleBar + '%'
+  femaleBar.style.width = s.femaleBar + '%'
+  maleSprite.classList.toggle('active', s.active === 'male' || s.active === 'both')
+  femaleSprite.classList.toggle('active', s.active === 'female' || s.active === 'both')
+  if (i >= scenes.length - 1) {
+    nextBtn.textContent = '— 完 —'
+  } else {
+    nextBtn.textContent = '继续 →'
+  }
+}
+
+nextBtn.addEventListener('click', () => {
+  if (step < scenes.length - 1) {
+    step++
+    render(step)
+  }
+})
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === ' ' || e.key === 'ArrowRight') {
+    e.preventDefault()
+    if (step < scenes.length - 1) {
+      step++
+      render(step)
+    }
+  }
+})
+
+render(0)
+</script>
+</body>
+</html>
