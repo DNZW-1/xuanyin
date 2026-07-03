@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "风格指南.md",
+                "file": "Agent Skills/README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "风格指南"
+              "title": "README"
             }
           }
         ]
@@ -183,13 +183,32 @@
       "bases:新建数据库": false
     }
   },
-  "active": "8b77d4273a18daf7",
+  "active": "8baf9201fde2aa17",
   "lastOpenFiles": [
+    "测试/README.md",
+    "提示词/风格指南.md",
+    "提示词/守则.md",
+    "提示词/README.md",
+    "世界背景/README.md",
+    "运行状态/世界状态/save.json",
+    "运行状态/README.md",
+    "行为规则/README.md",
+    "定义库/事件/场景-玄阴山夜袭.md",
+    "定义库/角色/苏尘.md",
+    "定义库/角色/冷凝霜.md",
+    "定义库/README.md",
+    "测试",
+    "提示词",
+    "世界背景",
+    "运行状态/玩家",
+    "运行状态/当前会话",
+    "运行状态/库存",
+    "运行状态/世界状态",
+    "运行状态/NPC状态",
+    "运行状态",
     "冷凝霜.md",
     "风格指南.md",
     "场景-玄阴山夜袭.md",
-    "苏尘.md",
-    "save.json",
-    "run.html"
+    "苏尘.md"
   ]
 }

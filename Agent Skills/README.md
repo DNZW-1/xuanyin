@@ -4,7 +4,7 @@
 
 ## 目录内容说明
 
-- 工作流定义（如：新增角色 → 创建 Definitions/Characters/ → 更新 Runtime/ 关联关系）
+- 工作流定义（如：新增角色 → 创建 定义库/角色/ → 更新 运行状态/ 关联关系）
 - opcode skill 配置（learned lessons、自定义 skill）
 - 自动化脚本（批量处理、校验、迁移工具）
 - 测试流程定义
